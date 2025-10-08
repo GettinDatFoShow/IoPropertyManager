@@ -1,0 +1,222 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Work Orders</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/work-orders/create" fill="outline">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Create
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Work Orders</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Statistics Cards -->
+  <div class="statistics-section" *ngIf="statistics$ | async as stats">
+    <ion-card>
+      <ion-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <ion-icon name="documents-outline" color="primary"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ stats.totalWorkOrders }}</h3>
+              <p>Total Work Orders</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="hammer-outline" color="warning"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ stats.inProgressWorkOrders }}</h3>
+              <p>In Progress</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="calendar-outline" color="primary"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ stats.workOrdersByStatus.scheduled || 0 }}</h3>
+              <p>Scheduled</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+            <div class="stat-content">
+              <h3>{{ stats.completedWorkOrders }}</h3>
+              <p>Completed</p>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Filters -->
+  <ion-card>
+    <ion-card-content>
+      <div class="filters-section">
+        <ion-searchbar
+          [(ngModel)]="searchTerm"
+          (ionInput)="onSearchChange()"
+          placeholder="Search work orders..."
+          debounce="300">
+        </ion-searchbar>
+        
+        <ion-select
+          [(ngModel)]="selectedStatus"
+          (ionChange)="onStatusFilterChange()"
+          placeholder="Filter by status"
+          interface="popover">
+          <ion-select-option 
+            *ngFor="let option of statusOptions" 
+            [value]="option.value">
+            {{ option.label }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refreshWorkOrders($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Work Orders List -->
+  <div class="work-orders-list">
+    <ion-card 
+      *ngFor="let workOrder of workOrders$ | async; trackBy: trackByWorkOrderId"
+      class="work-order-card"
+      [routerLink]="['/work-orders', workOrder.id]">
+      
+      <ion-card-header>
+        <div class="work-order-header">
+          <div class="title-section">
+            <ion-card-title>{{ workOrder.title }}</ion-card-title>
+            <ion-card-subtitle>{{ workOrder.workOrderNumber }}</ion-card-subtitle>
+          </div>
+          
+          <div class="status-section">
+            <ion-chip 
+              [color]="getStatusColor(workOrder.status)"
+              class="status-chip">
+              <ion-icon [name]="getStatusIcon(workOrder.status)"></ion-icon>
+              <ion-label>{{ workOrder.status | titlecase }}</ion-label>
+            </ion-chip>
+            
+            <ion-chip 
+              [color]="getPriorityColor(workOrder.priority)"
+              class="priority-chip">
+              <ion-label>{{ workOrder.priority | titlecase }}</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="work-order-details">
+          <!-- Property and Assignment -->
+          <div class="detail-row">
+            <ion-icon name="business-outline" color="medium"></ion-icon>
+            <span>{{ workOrder.propertyName }}</span>
+          </div>
+          
+          <div class="detail-row" *ngIf="workOrder.assignedEmployeeName">
+            <ion-icon name="person-outline" color="medium"></ion-icon>
+            <span>{{ workOrder.assignedEmployeeName }}</span>
+          </div>
+
+          <!-- Dates -->
+          <div class="detail-row" *ngIf="workOrder.scheduledDate">
+            <ion-icon name="calendar-outline" color="medium"></ion-icon>
+            <span>Scheduled: {{ workOrder.scheduledDate | date:'MMM d, y h:mm a' }}</span>
+          </div>
+
+          <!-- Progress -->
+          <div class="progress-section" *ngIf="workOrder.progressPercentage > 0">
+            <div class="progress-header">
+              <span>Progress</span>
+              <span>{{ workOrder.progressPercentage }}%</span>
+            </div>
+            <ion-progress-bar 
+              [value]="workOrder.progressPercentage / 100"
+              color="primary">
+            </ion-progress-bar>
+          </div>
+
+          <!-- Cost and Duration -->
+          <div class="metrics-section">
+            <div class="metric" *ngIf="workOrder.estimatedCost">
+              <ion-icon name="cash-outline" color="medium"></ion-icon>
+              <span>{{ formatCurrency(workOrder.estimatedCost) }}</span>
+            </div>
+            
+            <div class="metric">
+              <ion-icon name="time-outline" color="medium"></ion-icon>
+              <span>{{ formatDuration(workOrder.estimatedDuration) }}</span>
+            </div>
+
+            <div class="metric" *ngIf="workOrder.isEmergency">
+              <ion-icon name="warning-outline" color="danger"></ion-icon>
+              <span>Emergency</span>
+            </div>
+          </div>
+
+          <!-- Description Preview -->
+          <p class="description-preview" *ngIf="workOrder.description">
+            {{ workOrder.description }}
+          </p>
+        </div>
+      </ion-card-content>
+
+      <!-- Actions -->
+      <div class="card-actions">
+        <ion-button 
+          fill="clear" 
+          size="small"
+          (click)="$event.stopPropagation(); duplicateWorkOrder(workOrder)">
+          <ion-icon name="copy-outline" slot="start"></ion-icon>
+          Duplicate
+        </ion-button>
+        
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          color="danger"
+          (click)="$event.stopPropagation(); deleteWorkOrder(workOrder)">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Delete
+        </ion-button>
+      </div>
+    </ion-card>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-section" *ngIf="isLoading">
+    <ion-skeleton-text animated style="width: 100%; height: 200px; margin-bottom: 16px;" *ngFor="let item of [1,2,3]"></ion-skeleton-text>
+  </div>
+
+  <!-- No Results -->
+  <ion-card *ngIf="(workOrders$ | async)?.length === 0 && !isLoading" class="no-results">
+    <ion-card-content>
+      <div class="no-results-content">
+        <ion-icon name="construct-outline" size="large" color="medium"></ion-icon>
+        <h3>No Work Orders Found</h3>
+        <p>Create your first work order to get started</p>
+        <ion-button routerLink="/work-orders/create" fill="outline">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Create Work Order
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

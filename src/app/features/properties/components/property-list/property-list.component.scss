@@ -1,0 +1,186 @@
+.property-list-container {
+  padding: 0 1rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-filter-section {
+  margin-bottom: 1rem;
+  
+  ion-searchbar {
+    --background: var(--ion-color-light);
+    --border-radius: 12px;
+    --box-shadow: none;
+    --icon-color: var(--ion-color-medium);
+    margin-bottom: 1rem;
+  }
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  
+  ion-chip {
+    --background: var(--ion-color-light);
+    --color: var(--ion-color-medium-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      --background: var(--ion-color-primary-tint);
+      --color: var(--ion-color-primary);
+    }
+    
+    &.chip-selected {
+      --background: var(--ion-color-primary);
+      --color: var(--ion-color-primary-contrast);
+    }
+  }
+}
+
+.results-summary {
+  padding: 0 0.5rem;
+  
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  
+  ion-spinner {
+    margin-bottom: 1rem;
+    --color: var(--ion-color-primary);
+    transform: scale(1.5);
+  }
+  
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.properties-grid {
+  display: grid;
+  gap: 1rem;
+  
+  // Desktop: 2 columns
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  // Large desktop: 3 columns
+  @media (min-width: 1400px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  // Mobile: 1 column
+  @media (max-width: 991px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  
+  .no-results-icon {
+    font-size: 4rem;
+    color: var(--ion-color-medium);
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--ion-color-dark);
+    font-size: 1.25rem;
+  }
+  
+  p {
+    margin: 0 0 1.5rem 0;
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    max-width: 400px;
+  }
+  
+  ion-button {
+    margin-top: 0.5rem;
+  }
+}
+
+// Mobile-specific styles
+.mobile-only {
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+// Hide FAB on desktop, show add button in header instead
+@media (min-width: 768px) {
+  ion-fab {
+    display: none;
+  }
+}
+
+// Responsive adjustments for tablets
+@media (max-width: 768px) {
+  .property-list-container {
+    padding: 0 0.5rem 1rem;
+  }
+  
+  .filter-chips {
+    ion-chip {
+      font-size: 0.8rem;
+      
+      ion-label {
+        font-size: 0.8rem;
+      }
+    }
+  }
+  
+  .search-filter-section {
+    ion-searchbar {
+      --padding-start: 12px;
+      --padding-end: 12px;
+    }
+  }
+}
+
+// Animation for property cards
+.properties-grid {
+  app-property-card {
+    animation: fadeInUp 0.3s ease-out;
+    animation-fill-mode: both;
+    
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.1}s;
+      }
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

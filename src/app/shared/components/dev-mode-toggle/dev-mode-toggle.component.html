@@ -1,0 +1,52 @@
+<div class="dev-mode-container" *ngIf="isDevelopmentMode">
+  <ion-card color="warning">
+    <ion-card-header>
+      <ion-card-subtitle>🔧 Development Mode</ion-card-subtitle>
+      <ion-card-title>Mock User Control</ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <div class="current-user">
+        <p><strong>Current User:</strong> {{ getCurrentUserName() }}</p>
+        <p><strong>Role:</strong> 
+          <ion-badge [color]="getCurrentUserType() === 'owner' ? 'primary' : getCurrentUserType() === 'manager' ? 'secondary' : 'tertiary'">
+            {{ getCurrentUserType() | titlecase }}
+          </ion-badge>
+        </p>
+      </div>
+      
+      <div class="user-switcher">
+        <h4>Switch User Role:</h4>
+        <ion-button 
+          fill="outline" 
+          color="primary" 
+          size="small"
+          [disabled]="getCurrentUserType() === 'owner'"
+          (click)="switchUser('owner')">
+          <ion-icon name="business-outline" slot="start"></ion-icon>
+          Owner
+        </ion-button>
+        
+        <ion-button 
+          fill="outline" 
+          color="secondary" 
+          size="small"
+          [disabled]="getCurrentUserType() === 'manager'"
+          (click)="switchUser('manager')">
+          <ion-icon name="people-outline" slot="start"></ion-icon>
+          Manager
+        </ion-button>
+        
+        <ion-button 
+          fill="outline" 
+          color="tertiary" 
+          size="small"
+          [disabled]="getCurrentUserType() === 'employee'"
+          (click)="switchUser('employee')">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          Employee
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</div>

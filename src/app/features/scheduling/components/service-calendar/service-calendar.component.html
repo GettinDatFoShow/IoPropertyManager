@@ -1,0 +1,364 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Service Calendar</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openCreateScheduleModal()" fill="solid" color="primary">
+        <ion-icon name="add" slot="start"></ion-icon>
+        New Schedule
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Service Calendar</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Calendar Controls -->
+  <div class="calendar-controls">
+    <ion-card>
+      <ion-card-content>
+        <!-- Display Mode Toggle -->
+        <div class="display-mode-controls">
+          <ion-segment [(ngModel)]="displayMode" (ionChange)="toggleDisplayMode(displayMode)">
+            <ion-segment-button value="calendar">
+              <ion-icon name="calendar"></ion-icon>
+              <ion-label>Calendar</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="list">
+              <ion-icon name="list"></ion-icon>
+              <ion-label>List</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+
+        <!-- View Controls (only show in calendar mode) -->
+        <div class="view-controls" *ngIf="displayMode === 'calendar'">
+          <ion-segment [(ngModel)]="currentView" (ionChange)="changeView(currentView)">
+            <ion-segment-button value="month">
+              <ion-label>Month</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="week">
+              <ion-label>Week</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="agenda">
+              <ion-label>Agenda</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="navigation-controls">
+          <ion-button (click)="navigateCalendar('prev')" fill="clear" size="small">
+            <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
+          </ion-button>
+          
+          <h2 class="calendar-header">{{ getCalendarHeader() }}</h2>
+          
+          <ion-button (click)="navigateCalendar('next')" fill="clear" size="small">
+            <ion-icon name="chevron-forward" slot="icon-only"></ion-icon>
+          </ion-button>
+          
+          <ion-button (click)="goToToday()" fill="outline" size="small" color="primary">
+            Today
+          </ion-button>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="filters-section">
+          <ion-searchbar 
+            [(ngModel)]="searchTerm"
+            (ionInput)="onFilterChange()"
+            placeholder="Search schedules..."
+            debounce="300"
+            show-clear-button="focus">
+          </ion-searchbar>
+
+          <ion-row class="filter-row">
+            <ion-col size="12" size-md="3">
+              <ion-select 
+                [(ngModel)]="selectedCategory"
+                (ionChange)="onFilterChange()"
+                placeholder="All Categories"
+                interface="popover">
+                <ion-select-option value="all">All Categories</ion-select-option>
+                <ion-select-option *ngFor="let category of categories" [value]="category">
+                  {{ getCategoryDisplayName(category) }}
+                </ion-select-option>
+              </ion-select>
+            </ion-col>
+            
+            <ion-col size="12" size-md="3">
+              <ion-select 
+                [(ngModel)]="selectedPriority"
+                (ionChange)="onFilterChange()"
+                placeholder="All Priorities"
+                interface="popover">
+                <ion-select-option value="all">All Priorities</ion-select-option>
+                <ion-select-option *ngFor="let priority of priorities" [value]="priority">
+                  {{ priority | titlecase }}
+                </ion-select-option>
+              </ion-select>
+            </ion-col>
+            
+            <ion-col size="12" size-md="3">
+              <ion-checkbox 
+                [(ngModel)]="showCompleted" 
+                (ionChange)="onFilterChange()">
+              </ion-checkbox>
+              <ion-label class="checkbox-label">Show Completed</ion-label>
+            </ion-col>
+            
+            <ion-col size="12" size-md="3">
+              <ion-button 
+                (click)="clearFilters()" 
+                fill="clear" 
+                color="medium"
+                expand="block">
+                <ion-icon name="refresh" slot="start"></ion-icon>
+                Clear Filters
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading service calendar...</p>
+  </div>
+
+  <!-- Error Message -->
+  <ion-card *ngIf="error && !loading" color="danger">
+    <ion-card-content>
+      <ion-icon name="alert-circle" slot="start"></ion-icon>
+      {{ error }}
+      <ion-button (click)="loadScheduleData()" fill="clear" color="light" slot="end">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Retry
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Calendar Content -->
+  <div *ngIf="!loading && !error" class="calendar-content">
+    
+    <!-- Statistics Cards -->
+    <div *ngIf="statistics" class="statistics-section">
+      <ion-row>
+        <ion-col size="12" size-md="3">
+          <ion-card class="stat-card">
+            <ion-card-content>
+              <div class="stat-number">{{ statistics.upcomingServices }}</div>
+              <div class="stat-label">Upcoming Services</div>
+              <ion-icon name="calendar-outline" class="stat-icon" color="primary"></ion-icon>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="3">
+          <ion-card class="stat-card">
+            <ion-card-content>
+              <div class="stat-number">{{ statistics.overdueServices }}</div>
+              <div class="stat-label">Overdue Services</div>
+              <ion-icon name="warning-outline" class="stat-icon" color="danger"></ion-icon>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="3">
+          <ion-card class="stat-card">
+            <ion-card-content>
+              <div class="stat-number">{{ statistics.activeSchedules }}</div>
+              <div class="stat-label">Active Schedules</div>
+              <ion-icon name="checkmark-circle-outline" class="stat-icon" color="success"></ion-icon>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="3">
+          <ion-card class="stat-card">
+            <ion-card-content>
+              <div class="stat-number">${{ statistics.averageServiceCost.toFixed(0) }}</div>
+              <div class="stat-label">Avg Service Cost</div>
+              <ion-icon name="cash-outline" class="stat-icon" color="warning"></ion-icon>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </div>
+
+    <!-- Calendar Views -->
+    <div *ngIf="displayMode === 'calendar'">
+      <!-- Month View -->
+      <div *ngIf="currentView === 'month'" class="month-view">
+      <ion-card>
+        <div class="calendar-grid">
+          <!-- Day Headers -->
+          <div class="day-headers">
+            <div *ngFor="let dayName of dayNames" class="day-header">
+              {{ dayName }}
+            </div>
+          </div>
+
+          <!-- Calendar Days -->
+          <div class="calendar-days">
+            <div 
+              *ngFor="let day of calendarDays; trackBy: trackByCalendarDay"
+              class="calendar-day"
+              [class.other-month]="!day.isCurrentMonth"
+              [class.today]="day.isToday"
+              [class.selected]="day.isSelected"
+              [class.has-events]="day.events.length > 0"
+              (click)="selectDay(day)">
+              
+              <div class="day-number">{{ day.dayNumber }}</div>
+              
+              <div class="day-events">
+                <div 
+                  *ngFor="let event of day.events | slice:0:3; trackBy: trackByEvent"
+                  class="event-dot"
+                  [style.background-color]="event.backgroundColor"
+                  [title]="event.title">
+                </div>
+                <div *ngIf="day.events.length > 3" class="more-events">
+                  +{{ day.events.length - 3 }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-card>
+    </div>
+
+    <!-- Week View -->
+    <div *ngIf="currentView === 'week'" class="week-view">
+      <ion-card>
+        <ion-card-content>
+          <p class="text-center">Week view coming soon...</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Agenda View -->
+    <div *ngIf="currentView === 'agenda'" class="agenda-view">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Upcoming Services</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngIf="calendarEvents.length === 0" class="no-events">
+            <ion-icon name="calendar-outline" size="large" color="medium"></ion-icon>
+            <p>No upcoming services scheduled</p>
+          </div>
+          
+          <div 
+            *ngFor="let event of calendarEvents | slice:0:10; trackBy: trackByEvent"
+            class="agenda-item"
+            (click)="onEventClick(event)">
+            
+            <div class="event-date">
+              <div class="date-day">{{ event.start.getDate() }}</div>
+              <div class="date-month">{{ formatDate(event.start) }}</div>
+            </div>
+            
+            <div class="event-details">
+              <h3>{{ event.title }}</h3>
+              <p class="event-property">
+                <ion-icon name="business" class="icon-small"></ion-icon>
+                {{ event.propertyName }}
+              </p>
+              <p class="event-time">
+                <ion-icon name="time" class="icon-small"></ion-icon>
+                {{ formatTime(event.start) }} - {{ formatTime(event.end) }}
+              </p>
+              <div class="event-tags">
+                <ion-chip [color]="getPriorityColor(event.priority)" size="small">
+                  {{ event.priority | titlecase }}
+                </ion-chip>
+                <ion-chip [color]="getStatusColor(event.status)" size="small">
+                  {{ event.status | titlecase }}
+                </ion-chip>
+              </div>
+            </div>
+            
+            <div class="event-actions">
+              <ion-button fill="clear" size="small" color="primary">
+                <ion-icon name="eye" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Selected Date Events -->
+    <div *ngIf="selectedDate && currentView === 'month'" class="selected-date-events">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            Events for {{ formatDate(selectedDate) }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngIf="getSelectedDateEvents().length === 0" class="no-events">
+            <p>No events scheduled for this date</p>
+          </div>
+          
+          <div 
+            *ngFor="let event of getSelectedDateEvents(); trackBy: trackByEvent"
+            class="event-item"
+            (click)="onEventClick(event)">
+            
+            <div class="event-time-badge">
+              {{ formatTime(event.start) }}
+            </div>
+            
+            <div class="event-content">
+              <h4>{{ event.title }}</h4>
+              <p class="event-description">{{ event.description }}</p>
+              <div class="event-meta">
+                <span class="property-name">
+                  <ion-icon name="business" class="icon-small"></ion-icon>
+                  {{ event.propertyName }}
+                </span>
+                <span *ngIf="event.assignedEmployeeName" class="assigned-employee">
+                  <ion-icon name="person" class="icon-small"></ion-icon>
+                  {{ event.assignedEmployeeName }}
+                </span>
+              </div>
+              <div class="event-tags">
+                <ion-chip [color]="getPriorityColor(event.priority)" size="small">
+                  {{ event.priority | titlecase }}
+                </ion-chip>
+                <ion-chip color="tertiary" size="small">
+                  {{ getCategoryDisplayName(event.category) }}
+                </ion-chip>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+    </div>
+
+    <!-- List View -->
+    <div *ngIf="displayMode === 'list'">
+      <app-schedule-list></app-schedule-list>
+    </div>
+  </div>
+
+  <!-- Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="loadScheduleData()">
+    <ion-refresher-content 
+      pulling-icon="chevron-down-circle-outline"
+      pulling-text="Pull to refresh"
+      refreshing-spinner="circles"
+      refreshing-text="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+</ion-content>

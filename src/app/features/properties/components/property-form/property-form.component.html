@@ -1,0 +1,360 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="onCancel()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEditing ? 'Edit Property' : 'Add Property' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+        (click)="onSubmit()" 
+        [disabled]="isSaving || !propertyForm.valid"
+        fill="solid">
+        <ion-spinner *ngIf="isSaving" name="crescent" slot="start"></ion-spinner>
+        <span *ngIf="!isSaving">{{ isEditing ? 'Update' : 'Save' }}</span>
+        <span *ngIf="isSaving">Saving...</span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="dots"></ion-spinner>
+    <ion-text color="medium">
+      <p>Loading property information...</p>
+    </ion-text>
+  </div>
+
+  <!-- Property Form -->
+  <form *ngIf="!isLoading" [formGroup]="propertyForm" (ngSubmit)="onSubmit()" class="property-form">
+    
+    <!-- Basic Information Section -->
+    <div class="form-section">
+      <h2 class="section-title">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        Basic Information
+      </h2>
+
+      <!-- Property Name -->
+      <ion-item>
+        <ion-label position="stacked">Property Name *</ion-label>
+        <ion-input 
+          formControlName="name"
+          placeholder="Enter property name"
+          [class.ion-invalid]="isFieldInvalid('name')"
+          [class.ion-touched]="propertyForm.get('name')?.touched">
+        </ion-input>
+        <ion-note *ngIf="isFieldInvalid('name')" slot="error">
+          {{ getFieldError('name') }}
+        </ion-note>
+      </ion-item>
+
+      <!-- Property Type -->
+      <ion-item>
+        <ion-label position="stacked">Property Type *</ion-label>
+        <ion-select 
+          formControlName="type"
+          placeholder="Select property type"
+          [class.ion-invalid]="isFieldInvalid('type')">
+          <ion-select-option 
+            *ngFor="let type of propertyTypes" 
+            [value]="type.value">
+            <div class="select-option">
+              <ion-icon [name]="type.icon"></ion-icon>
+              {{ type.label }}
+            </div>
+          </ion-select-option>
+        </ion-select>
+        <ion-note *ngIf="isFieldInvalid('type')" slot="error">
+          {{ getFieldError('type') }}
+        </ion-note>
+      </ion-item>
+
+      <!-- Description -->
+      <ion-item>
+        <ion-label position="stacked">Description</ion-label>
+        <ion-textarea
+          formControlName="description"
+          placeholder="Enter property description (optional)"
+          rows="3"
+          [class.ion-invalid]="isFieldInvalid('description')">
+        </ion-textarea>
+        <ion-note *ngIf="isFieldInvalid('description')" slot="error">
+          {{ getFieldError('description') }}
+        </ion-note>
+      </ion-item>
+    </div>
+
+    <!-- Address Information Section -->
+    <div class="form-section" formGroupName="address">
+      <h2 class="section-title">
+        <ion-icon name="location-outline"></ion-icon>
+        Address Information
+      </h2>
+
+      <!-- Street Address -->
+      <ion-item>
+        <ion-label position="stacked">Street Address *</ion-label>
+        <ion-input 
+          formControlName="street"
+          placeholder="Enter street address"
+          (ionBlur)="onAddressChange()"
+          [class.ion-invalid]="isFieldInvalid('address.street')">
+        </ion-input>
+        <ion-note *ngIf="isFieldInvalid('address.street')" slot="error">
+          {{ getFieldError('address.street') }}
+        </ion-note>
+      </ion-item>
+
+      <!-- City and State Row -->
+      <div class="row-inputs">
+        <ion-item class="row-item">
+          <ion-label position="stacked">City *</ion-label>
+          <ion-input 
+            formControlName="city"
+            placeholder="City"
+            (ionBlur)="onAddressChange()"
+            [class.ion-invalid]="isFieldInvalid('address.city')">
+          </ion-input>
+          <ion-note *ngIf="isFieldInvalid('address.city')" slot="error">
+            {{ getFieldError('address.city') }}
+          </ion-note>
+        </ion-item>
+
+        <ion-item class="row-item">
+          <ion-label position="stacked">State *</ion-label>
+          <ion-input 
+            formControlName="state"
+            placeholder="State"
+            maxlength="2"
+            [class.ion-invalid]="isFieldInvalid('address.state')">
+          </ion-input>
+          <ion-note *ngIf="isFieldInvalid('address.state')" slot="error">
+            {{ getFieldError('address.state') }}
+          </ion-note>
+        </ion-item>
+      </div>
+
+      <!-- ZIP Code and Country Row -->
+      <div class="row-inputs">
+        <ion-item class="row-item">
+          <ion-label position="stacked">ZIP Code *</ion-label>
+          <ion-input 
+            formControlName="zipCode"
+            placeholder="12345"
+            maxlength="10"
+            [class.ion-invalid]="isFieldInvalid('address.zipCode')">
+          </ion-input>
+          <ion-note *ngIf="isFieldInvalid('address.zipCode')" slot="error">
+            {{ getFieldError('address.zipCode') }}
+          </ion-note>
+        </ion-item>
+
+        <ion-item class="row-item">
+          <ion-label position="stacked">Country *</ion-label>
+          <ion-input 
+            formControlName="country"
+            placeholder="USA"
+            readonly>
+          </ion-input>
+        </ion-item>
+      </div>
+    </div>
+
+    <!-- Owner Information Section -->
+    <div class="form-section" formGroupName="owner">
+      <h2 class="section-title">
+        <ion-icon name="person-outline"></ion-icon>
+        Property Owner
+      </h2>
+
+      <!-- Owner Name -->
+      <ion-item>
+        <ion-label position="stacked">Owner Name *</ion-label>
+        <ion-input 
+          formControlName="name"
+          placeholder="Enter owner's full name"
+          [class.ion-invalid]="isFieldInvalid('owner.name')">
+        </ion-input>
+        <ion-note *ngIf="isFieldInvalid('owner.name')" slot="error">
+          {{ getFieldError('owner.name') }}
+        </ion-note>
+      </ion-item>
+
+      <!-- Owner Contact Row -->
+      <div class="row-inputs">
+        <ion-item class="row-item">
+          <ion-label position="stacked">Email *</ion-label>
+          <ion-input 
+            formControlName="email"
+            type="email"
+            placeholder="owner@email.com"
+            [class.ion-invalid]="isFieldInvalid('owner.email')">
+          </ion-input>
+          <ion-note *ngIf="isFieldInvalid('owner.email')" slot="error">
+            {{ getFieldError('owner.email') }}
+          </ion-note>
+        </ion-item>
+
+        <ion-item class="row-item">
+          <ion-label position="stacked">Phone *</ion-label>
+          <ion-input 
+            formControlName="phone"
+            type="tel"
+            placeholder="(123) 456-7890"
+            [class.ion-invalid]="isFieldInvalid('owner.phone')">
+          </ion-input>
+          <ion-note *ngIf="isFieldInvalid('owner.phone')" slot="error">
+            {{ getFieldError('owner.phone') }}
+          </ion-note>
+        </ion-item>
+      </div>
+    </div>
+
+    <!-- Photos Section -->
+    <div class="form-section">
+      <h2 class="section-title">
+        <ion-icon name="camera-outline"></ion-icon>
+        Property Photos
+      </h2>
+
+      <!-- Photo Upload -->
+      <div class="photo-upload-section">
+        <input 
+          type="file" 
+          id="photo-upload" 
+          multiple 
+          accept="image/*"
+          (change)="onPhotoUpload($event)"
+          style="display: none;">
+        
+        <ion-button 
+          fill="outline" 
+          (click)="triggerPhotoUpload()">
+          <ion-icon name="camera" slot="start"></ion-icon>
+          Add Photos
+        </ion-button>
+
+        <!-- Photo Gallery -->
+        <div class="photo-gallery" *ngIf="uploadedPhotos.length > 0">
+          <div 
+            *ngFor="let photo of uploadedPhotos; let i = index" 
+            class="photo-item">
+            <img [src]="photo" [alt]="'Property photo ' + (i + 1)">
+            <ion-button 
+              fill="clear" 
+              size="small" 
+              color="danger"
+              class="remove-photo-btn"
+              (click)="removePhoto(i)">
+              <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscription Information Section -->
+    <div class="form-section" formGroupName="subscription">
+      <h2 class="section-title">
+        <ion-icon name="card-outline"></ion-icon>
+        Subscription Details
+      </h2>
+
+      <!-- Cost and Billing Row -->
+      <div class="row-inputs">
+        <ion-item class="row-item">
+          <ion-label position="stacked">Monthly Cost *</ion-label>
+          <ion-input 
+            formControlName="cost"
+            type="number"
+            placeholder="0"
+            min="0"
+            step="0.01"
+            [class.ion-invalid]="isFieldInvalid('subscription.cost')">
+          </ion-input>
+          <ion-note slot="start">$</ion-note>
+          <ion-note *ngIf="isFieldInvalid('subscription.cost')" slot="error">
+            {{ getFieldError('subscription.cost') }}
+          </ion-note>
+        </ion-item>
+
+        <ion-item class="row-item">
+          <ion-label position="stacked">Billing Frequency *</ion-label>
+          <ion-select 
+            formControlName="billing"
+            [class.ion-invalid]="isFieldInvalid('subscription.billing')">
+            <ion-select-option 
+              *ngFor="let freq of billingFrequencies" 
+              [value]="freq.value">
+              {{ freq.label }}
+            </ion-select-option>
+          </ion-select>
+          <ion-note *ngIf="isFieldInvalid('subscription.billing')" slot="error">
+            {{ getFieldError('subscription.billing') }}
+          </ion-note>
+        </ion-item>
+      </div>
+    </div>
+
+    <!-- Service Configuration Section -->
+    <div class="form-section">
+      <h2 class="section-title">
+        <ion-icon name="settings-outline"></ion-icon>
+        Service Configuration
+      </h2>
+
+      <!-- Service Items and Next Service Row -->
+      <div class="row-inputs">
+        <ion-item class="row-item">
+          <ion-label position="stacked">Serviceable Items *</ion-label>
+          <ion-input 
+            formControlName="serviceableItemsCount"
+            type="number"
+            placeholder="0"
+            min="0"
+            [class.ion-invalid]="isFieldInvalid('serviceableItemsCount')">
+          </ion-input>
+          <ion-note *ngIf="isFieldInvalid('serviceableItemsCount')" slot="error">
+            {{ getFieldError('serviceableItemsCount') }}
+          </ion-note>
+        </ion-item>
+
+        <ion-item class="row-item">
+          <ion-label position="stacked">Next Service Date</ion-label>
+          <ion-input 
+            formControlName="nextServiceDate"
+            type="date">
+          </ion-input>
+        </ion-item>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <ion-button 
+        expand="block" 
+        type="submit"
+        [disabled]="!propertyForm.valid || isSaving"
+        class="submit-button">
+        <ion-spinner *ngIf="isSaving" name="crescent" slot="start"></ion-spinner>
+        <ion-icon *ngIf="!isSaving" name="checkmark" slot="start"></ion-icon>
+        <span *ngIf="!isSaving">{{ isEditing ? 'Update Property' : 'Create Property' }}</span>
+        <span *ngIf="isSaving">{{ isEditing ? 'Updating...' : 'Creating...' }}</span>
+      </ion-button>
+
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        color="medium"
+        (click)="onCancel()"
+        [disabled]="isSaving">
+        <ion-icon name="close" slot="start"></ion-icon>
+        Cancel
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

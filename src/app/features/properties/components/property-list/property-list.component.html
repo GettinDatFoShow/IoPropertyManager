@@ -1,0 +1,108 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Properties</ion-title>
+    <ion-buttons slot="end" *ngIf="canAddProperties">
+      <ion-button fill="clear" routerLink="/tabs/property-form">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Collapsible Header -->
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Properties</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refreshProperties($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Loading properties...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="property-list-container">
+    <!-- Search and Filter Section -->
+    <div class="search-filter-section">
+      <!-- Search Bar -->
+      <ion-searchbar
+        [(ngModel)]="searchTerm"
+        (ionInput)="onSearchChange()"
+        placeholder="Search properties, addresses, or owners..."
+        debounce="300"
+        show-clear-button="focus">
+      </ion-searchbar>
+
+      <!-- Filter Chips -->
+      <div class="filter-chips">
+        <ion-chip 
+          *ngFor="let filter of filterOptions"
+          [class.chip-selected]="selectedFilter === filter.value"
+          (click)="selectedFilter = filter.value; onFilterChange()">
+          <ion-label>{{ filter.label }}</ion-label>
+        </ion-chip>
+      </div>
+
+      <!-- Results Summary -->
+      <div class="results-summary">
+        <ion-text color="medium">
+          <p>{{ getPropertyCount() }}</p>
+        </ion-text>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <ion-spinner name="dots"></ion-spinner>
+      <ion-text color="medium">
+        <p>Loading properties...</p>
+      </ion-text>
+    </div>
+
+    <!-- Property List -->
+    <div *ngIf="!isLoading" class="properties-grid">
+      <!-- No Results State -->
+      <div *ngIf="filteredProperties.length === 0" class="no-results">
+        <ion-icon name="home-outline" class="no-results-icon"></ion-icon>
+        <h3>No properties found</h3>
+        <p *ngIf="searchTerm || selectedFilter !== 'all'">
+          Try adjusting your search terms or filters.
+        </p>
+        <p *ngIf="!searchTerm && selectedFilter === 'all'">
+          Get started by adding your first property.
+        </p>
+        <ion-button 
+          *ngIf="canAddProperties && !searchTerm && selectedFilter === 'all'" 
+          fill="solid" 
+          routerLink="/tabs/property-form">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Add Property
+        </ion-button>
+      </div>
+
+      <!-- Property Cards -->
+      <app-property-card 
+        *ngFor="let property of filteredProperties; trackBy: trackByPropertyId"
+        [property]="property">
+      </app-property-card>
+    </div>
+
+    <!-- Quick Actions FAB (for mobile) -->
+    <ion-fab 
+      *ngIf="canAddProperties && !isLoading" 
+      vertical="bottom" 
+      horizontal="end" 
+      slot="fixed"
+      class="mobile-only">
+      <ion-fab-button routerLink="/tabs/property-form">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </div>
+</ion-content>

@@ -1,0 +1,287 @@
+// Work Order List Component Styles
+
+.statistics-section {
+  padding: 0 16px;
+  margin-top: 16px;
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      ion-icon {
+        font-size: 32px;
+        flex-shrink: 0;
+      }
+
+      .stat-content {
+        flex: 1;
+
+        h3 {
+          margin: 0;
+          font-size: 24px;
+          font-weight: 600;
+          color: var(--ion-color-dark);
+        }
+
+        p {
+          margin: 4px 0 0 0;
+          font-size: 14px;
+          color: var(--ion-color-medium);
+        }
+      }
+    }
+  }
+}
+
+.filters-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+
+    ion-searchbar {
+      flex: 1;
+    }
+
+    ion-select {
+      min-width: 200px;
+    }
+  }
+}
+
+.work-orders-list {
+  padding: 0 16px 32px 16px;
+
+  .work-order-card {
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .work-order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+
+      .title-section {
+        flex: 1;
+        min-width: 0; // Allow text truncation
+
+        ion-card-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--ion-color-dark);
+          margin-bottom: 4px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        ion-card-subtitle {
+          color: var(--ion-color-medium);
+          font-size: 14px;
+        }
+      }
+
+      .status-section {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+
+        @media (min-width: 768px) {
+          flex-direction: row;
+          align-items: center;
+        }
+
+        .status-chip,
+        .priority-chip {
+          font-size: 12px;
+          height: 28px;
+
+          ion-icon {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+
+    .work-order-details {
+      .detail-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--ion-color-dark);
+
+        ion-icon {
+          font-size: 16px;
+          flex-shrink: 0;
+        }
+
+        span {
+          flex: 1;
+        }
+      }
+
+      .progress-section {
+        margin: 16px 0;
+
+        .progress-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+          font-size: 14px;
+          color: var(--ion-color-dark);
+          font-weight: 500;
+        }
+
+        ion-progress-bar {
+          height: 8px;
+          border-radius: 4px;
+        }
+      }
+
+      .metrics-section {
+        display: flex;
+        gap: 16px;
+        margin: 16px 0;
+        flex-wrap: wrap;
+
+        .metric {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 14px;
+          color: var(--ion-color-dark);
+
+          ion-icon {
+            font-size: 16px;
+          }
+        }
+      }
+
+      .description-preview {
+        margin: 16px 0 0 0;
+        font-size: 14px;
+        color: var(--ion-color-medium);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+      }
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 0 16px 16px 16px;
+      border-top: 1px solid var(--ion-color-light);
+      margin-top: 16px;
+      padding-top: 16px;
+
+      ion-button {
+        --padding-start: 12px;
+        --padding-end: 12px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.loading-section {
+  padding: 0 16px;
+
+  ion-skeleton-text {
+    border-radius: 8px;
+  }
+}
+
+.no-results {
+  margin: 32px 16px;
+
+  .no-results-content {
+    text-align: center;
+    padding: 32px 16px;
+
+    ion-icon {
+      margin-bottom: 16px;
+      opacity: 0.6;
+    }
+
+    h3 {
+      margin: 0 0 8px 0;
+      color: var(--ion-color-dark);
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0 0 24px 0;
+      color: var(--ion-color-medium);
+      font-size: 16px;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767px) {
+  .work-order-card {
+    .work-order-header {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .status-section {
+        align-self: stretch;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .card-actions {
+      flex-direction: column;
+
+      ion-button {
+        width: 100%;
+        margin: 0;
+      }
+    }
+  }
+
+  .metrics-section {
+    .metric {
+      flex: 1;
+      min-width: calc(50% - 8px);
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .work-order-card {
+    &:hover {
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+    }
+  }
+}

@@ -1,0 +1,330 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Service Requests</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="createServiceRequest()" fill="solid" color="primary">
+        <ion-icon name="add" slot="start"></ion-icon>
+        New Request
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Service Requests</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Search and Filters -->
+  <div class="search-filters-container">
+    <ion-card>
+      <ion-card-content>
+        <!-- Search Bar -->
+        <ion-searchbar 
+          [(ngModel)]="searchTerm"
+          (ionInput)="onSearch()"
+          placeholder="Search by title, description, property, or requester..."
+          debounce="300"
+          show-clear-button="focus">
+        </ion-searchbar>
+
+        <!-- Filter Row -->
+        <ion-row class="filter-row">
+          <ion-col size="12" size-md="3">
+            <ion-select 
+              [(ngModel)]="selectedCategory"
+              (ionChange)="onFilterChange()"
+              placeholder="All Categories"
+              interface="popover">
+              <ion-select-option value="all">All Categories</ion-select-option>
+              <ion-select-option *ngFor="let category of categories" [value]="category">
+                {{ getCategoryDisplayName(category) }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+          
+          <ion-col size="12" size-md="3">
+            <ion-select 
+              [(ngModel)]="selectedPriority"
+              (ionChange)="onFilterChange()"
+              placeholder="All Priorities"
+              interface="popover">
+              <ion-select-option value="all">All Priorities</ion-select-option>
+              <ion-select-option *ngFor="let priority of priorities" [value]="priority">
+                {{ getPriorityDisplayName(priority) }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+          
+          <ion-col size="12" size-md="3">
+            <ion-select 
+              [(ngModel)]="selectedStatus"
+              (ionChange)="onFilterChange()"
+              placeholder="All Statuses"
+              interface="popover">
+              <ion-select-option value="all">All Statuses</ion-select-option>
+              <ion-select-option *ngFor="let status of statuses" [value]="status">
+                {{ getStatusDisplayName(status) }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+          
+          <ion-col size="12" size-md="3">
+            <ion-button 
+              (click)="clearFilters()" 
+              fill="clear" 
+              color="medium"
+              expand="block">
+              <ion-icon name="refresh" slot="start"></ion-icon>
+              Clear Filters
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading service requests...</p>
+  </div>
+
+  <!-- Error Message -->
+  <ion-card *ngIf="error && !loading" color="danger">
+    <ion-card-content>
+      <ion-icon name="alert-circle" slot="start"></ion-icon>
+      {{ error }}
+      <ion-button (click)="loadServiceRequests()" fill="clear" color="light" slot="end">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Retry
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Service Request List -->
+  <div *ngIf="!loading && !error" class="service-requests-container">
+    
+    <!-- Results Summary -->
+    <div class="results-summary">
+      <p class="results-count">
+        Showing {{ filteredRequests.length }} of {{ totalItems }} service requests
+      </p>
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="desktop-table" *ngIf="filteredRequests.length > 0">
+      <ion-card>
+        <div class="table-responsive">
+          <table class="service-requests-table">
+            <thead>
+              <tr>
+                <th (click)="onSort('title')" class="sortable">
+                  Title
+                  <ion-icon [name]="getSortIcon('title')"></ion-icon>
+                </th>
+                <th (click)="onSort('propertyName')" class="sortable">
+                  Property
+                  <ion-icon [name]="getSortIcon('propertyName')"></ion-icon>
+                </th>
+                <th (click)="onSort('category')" class="sortable">
+                  Category
+                  <ion-icon [name]="getSortIcon('category')"></ion-icon>
+                </th>
+                <th (click)="onSort('priority')" class="sortable">
+                  Priority
+                  <ion-icon [name]="getSortIcon('priority')"></ion-icon>
+                </th>
+                <th (click)="onSort('status')" class="sortable">
+                  Status
+                  <ion-icon [name]="getSortIcon('status')"></ion-icon>
+                </th>
+                <th (click)="onSort('assignedToName')" class="sortable">
+                  Assigned To
+                  <ion-icon [name]="getSortIcon('assignedToName')"></ion-icon>
+                </th>
+                <th (click)="onSort('createdAt')" class="sortable">
+                  Created
+                  <ion-icon [name]="getSortIcon('createdAt')"></ion-icon>
+                </th>
+                <th (click)="onSort('estimatedCost')" class="sortable">
+                  Est. Cost
+                  <ion-icon [name]="getSortIcon('estimatedCost')"></ion-icon>
+                </th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let request of filteredRequests; trackBy: trackByServiceRequest">
+                <td class="title-cell">
+                  <strong>{{ request.title }}</strong>
+                  <div class="description-preview">{{ request.description | slice:0:100 }}...</div>
+                </td>
+                <td>{{ request.propertyName }}</td>
+                <td>
+                  <ion-chip color="tertiary" size="small">
+                    {{ getCategoryDisplayName(request.category) }}
+                  </ion-chip>
+                </td>
+                <td>
+                  <ion-chip [color]="getPriorityColor(request.priority)" size="small">
+                    {{ getPriorityDisplayName(request.priority) }}
+                  </ion-chip>
+                </td>
+                <td>
+                  <ion-chip [color]="getStatusColor(request.status)" size="small">
+                    {{ getStatusDisplayName(request.status) }}
+                  </ion-chip>
+                </td>
+                <td>{{ request.assignedToName || 'Unassigned' }}</td>
+                <td>{{ formatDate(request.createdAt) }}</td>
+                <td>{{ formatCurrency(request.estimatedCost) }}</td>
+                <td>
+                  <ion-button 
+                    (click)="viewServiceRequest(request)" 
+                    fill="clear" 
+                    size="small"
+                    color="primary">
+                    <ion-icon name="eye" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  <ion-button 
+                    (click)="editServiceRequest(request)" 
+                    fill="clear" 
+                    size="small"
+                    color="secondary">
+                    <ion-icon name="create" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  <ion-button 
+                    (click)="deleteServiceRequest(request)" 
+                    fill="clear" 
+                    size="small"
+                    color="danger">
+                    <ion-icon name="trash" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ion-card>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-cards" *ngIf="filteredRequests.length > 0">
+      <ion-card 
+        *ngFor="let request of filteredRequests; trackBy: trackByServiceRequest"
+        (click)="viewServiceRequest(request)"
+        class="service-request-card">
+        
+        <ion-card-header>
+          <div class="card-header-row">
+            <ion-card-title>{{ request.title }}</ion-card-title>
+            <ion-chip [color]="getPriorityColor(request.priority)" size="small">
+              {{ getPriorityDisplayName(request.priority) }}
+            </ion-chip>
+          </div>
+          
+          <ion-card-subtitle>
+            <ion-icon name="business" class="icon-small"></ion-icon>
+            {{ request.propertyName }}
+          </ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+          <p class="description">{{ request.description | slice:0:150 }}...</p>
+          
+          <div class="card-details">
+            <div class="detail-row">
+              <ion-chip color="tertiary" size="small">
+                {{ getCategoryDisplayName(request.category) }}
+              </ion-chip>
+              <ion-chip [color]="getStatusColor(request.status)" size="small">
+                {{ getStatusDisplayName(request.status) }}
+              </ion-chip>
+            </div>
+            
+            <div class="detail-row">
+              <span class="detail-label">
+                <ion-icon name="person" class="icon-small"></ion-icon>
+                Assigned: {{ request.assignedToName || 'Unassigned' }}
+              </span>
+            </div>
+            
+            <div class="detail-row">
+              <span class="detail-label">
+                <ion-icon name="calendar" class="icon-small"></ion-icon>
+                Created: {{ formatDate(request.createdAt) }}
+              </span>
+              <span class="detail-value">
+                <ion-icon name="cash" class="icon-small"></ion-icon>
+                Est: {{ formatCurrency(request.estimatedCost) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <ion-button 
+              (click)="viewServiceRequest(request); $event.stopPropagation()" 
+              fill="clear" 
+              size="small"
+              color="primary">
+              <ion-icon name="eye" slot="start"></ion-icon>
+              View
+            </ion-button>
+            <ion-button 
+              (click)="editServiceRequest(request); $event.stopPropagation()" 
+              fill="clear" 
+              size="small"
+              color="secondary">
+              <ion-icon name="create" slot="start"></ion-icon>
+              Edit
+            </ion-button>
+            <ion-button 
+              (click)="deleteServiceRequest(request); $event.stopPropagation()" 
+              fill="clear" 
+              size="small"
+              color="danger">
+              <ion-icon name="trash" slot="start"></ion-icon>
+              Delete
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredRequests.length === 0" class="empty-state">
+      <ion-card>
+        <ion-card-content class="text-center">
+          <ion-icon name="construct" size="large" color="medium"></ion-icon>
+          <h2>No Service Requests Found</h2>
+          <p>
+            <span *ngIf="searchTerm || selectedCategory !== 'all' || selectedPriority !== 'all' || selectedStatus !== 'all'">
+              Try adjusting your search or filter criteria.
+            </span>
+            <span *ngIf="!searchTerm && selectedCategory === 'all' && selectedPriority === 'all' && selectedStatus === 'all'">
+              Create your first service request to get started.
+            </span>
+          </p>
+          <ion-button (click)="createServiceRequest()" color="primary">
+            <ion-icon name="add" slot="start"></ion-icon>
+            Create Service Request
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content 
+      pulling-icon="chevron-down-circle-outline"
+      pulling-text="Pull to refresh"
+      refreshing-spinner="circles"
+      refreshing-text="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+</ion-content>

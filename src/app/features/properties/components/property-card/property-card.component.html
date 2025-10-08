@@ -1,0 +1,89 @@
+<ion-card class="property-card" [routerLink]="['/tabs/property-detail', property.id]">
+  <!-- Property Image -->
+  <div class="property-image-container">
+    <img 
+      [src]="property.photos?.[0] || 'https://via.placeholder.com/400x300/E0E0E0/999999?text=No+Image'" 
+      [alt]="property.name"
+      class="property-image"
+    />
+    <div class="property-type-badge">
+      <ion-badge color="primary">
+        <ion-icon [name]="getPropertyTypeIcon(property.type)"></ion-icon>
+        {{ getPropertyTypeLabel(property.type) }}
+      </ion-badge>
+    </div>
+  </div>
+
+  <!-- Property Content -->
+  <ion-card-content>
+    <div class="property-header">
+      <h2 class="property-name">{{ property.name }}</h2>
+      <div class="property-stats">
+        <span class="stat-item">
+          <ion-icon name="layers-outline"></ion-icon>
+          {{ property.serviceableItemsCount }} items
+        </span>
+      </div>
+    </div>
+
+    <div class="property-details">
+      <p class="property-description">{{ property.description }}</p>
+      
+      <div class="property-location">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>{{ property.address.formatted }}</span>
+      </div>
+
+      <div class="property-owner">
+        <ion-icon name="person-outline"></ion-icon>
+        <span>{{ property.owner.name }}</span>
+      </div>
+    </div>
+
+    <!-- Service Status -->
+    <div class="service-status">
+      <ion-badge [color]="getStatusColor()" class="status-badge">
+        <ion-icon name="time-outline"></ion-icon>
+        {{ getStatusText() }}
+      </ion-badge>
+    </div>
+
+    <!-- Property Metrics -->
+    <div class="property-metrics">
+      <div class="metric">
+        <span class="metric-label">Monthly Cost</span>
+        <span class="metric-value">${{ property.subscription.cost }}</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Total Cost</span>
+        <span class="metric-value">${{ property.totalCost }}</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Next Billing</span>
+        <span class="metric-value">{{ property.subscription.nextBilling | date:'shortDate' }}</span>
+      </div>
+    </div>
+
+    <!-- Assigned Employees -->
+    <div class="assigned-employees" *ngIf="property.assignedEmployees?.length > 0">
+      <span class="employees-label">
+        <ion-icon name="people-outline"></ion-icon>
+        Assigned Team:
+      </span>
+      <div class="employee-badges">
+        <ion-badge 
+          *ngFor="let employeeId of property.assignedEmployees.slice(0, 3)" 
+          color="secondary"
+          size="small">
+          {{ employeeId.split('-')[1] | titlecase }}
+        </ion-badge>
+        <ion-badge 
+          *ngIf="property.assignedEmployees.length > 3" 
+          color="medium"
+          size="small">
+          +{{ property.assignedEmployees.length - 3 }} more
+        </ion-badge>
+      </div>
+    </div>
+  </ion-card-content>
+</ion-card>

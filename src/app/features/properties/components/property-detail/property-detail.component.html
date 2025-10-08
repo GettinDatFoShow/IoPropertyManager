@@ -1,0 +1,214 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ property?.name || 'Property Details' }}</ion-title>
+    <ion-buttons slot="end" *ngIf="canEditProperty && property">
+      <ion-button fill="clear">
+        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="dots"></ion-spinner>
+    <ion-text color="medium">
+      <p>Loading property details...</p>
+    </ion-text>
+  </div>
+
+  <!-- Property Details -->
+  <div *ngIf="!isLoading && property" class="property-detail-container">
+    
+    <!-- Property Hero Image -->
+    <div class="property-hero">
+      <img 
+        [src]="property.photos?.[0] || 'https://via.placeholder.com/800x400/E0E0E0/999999?text=No+Image'" 
+        [alt]="property.name"
+        class="hero-image"
+      />
+      <div class="hero-overlay">
+        <div class="property-type-badge">
+          <ion-badge color="primary">
+            <ion-icon [name]="getPropertyTypeIcon(property.type)"></ion-icon>
+            {{ getPropertyTypeLabel(property.type) }}
+          </ion-badge>
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Information -->
+    <div class="property-info">
+      
+      <!-- Basic Information -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{ property.name }}</ion-card-title>
+          <ion-card-subtitle>{{ property.description }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          
+          <!-- Location -->
+          <div class="info-item">
+            <ion-icon name="location-outline" class="info-icon"></ion-icon>
+            <div class="info-content">
+              <strong>Address</strong>
+              <p>{{ property.address.formatted }}</p>
+            </div>
+          </div>
+
+          <!-- Owner Information -->
+          <div class="info-item">
+            <ion-icon name="person-outline" class="info-icon"></ion-icon>
+            <div class="info-content">
+              <strong>Property Owner</strong>
+              <p>{{ property.owner.name }}</p>
+              <p class="contact-info">
+                <ion-icon name="mail-outline"></ion-icon>
+                {{ property.owner.email }}
+              </p>
+              <p class="contact-info">
+                <ion-icon name="call-outline"></ion-icon>
+                {{ property.owner.phone }}
+              </p>
+            </div>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Service Status -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Service Status</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="service-status">
+            <ion-badge [color]="getStatusColor()" class="status-badge">
+              <ion-icon name="time-outline"></ion-icon>
+              {{ getStatusText() }}
+            </ion-badge>
+          </div>
+          
+          <div class="service-items">
+            <div class="service-stat">
+              <ion-icon name="layers-outline"></ion-icon>
+              <span>{{ property.serviceableItemsCount }} serviceable items</span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Financial Information -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Financial Overview</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="financial-metrics">
+            <div class="metric">
+              <div class="metric-value">${{ property.subscription.cost }}</div>
+              <div class="metric-label">Monthly Subscription</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">${{ property.totalCost }}</div>
+              <div class="metric-label">Total Property Cost</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">{{ property.subscription.nextBilling | date:'shortDate' }}</div>
+              <div class="metric-label">Next Billing</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">{{ property.subscription.billing | titlecase }}</div>
+              <div class="metric-label">Billing Frequency</div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Assigned Team -->
+      <ion-card *ngIf="property.assignedEmployees?.length > 0">
+        <ion-card-header>
+          <ion-card-title>Assigned Team</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="assigned-team">
+            <div 
+              *ngFor="let employeeId of property.assignedEmployees" 
+              class="team-member">
+              <ion-avatar class="member-avatar">
+                <img src="https://via.placeholder.com/60x60/4A90E2/FFFFFF?text={{ employeeId.split('-')[1].charAt(0).toUpperCase() }}" />
+              </ion-avatar>
+              <div class="member-info">
+                <h4>{{ employeeId.split('-')[1] | titlecase }} Employee</h4>
+                <p>Assigned to this property</p>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Property Timeline -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Property Timeline</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <h4>Property Added</h4>
+                <p>{{ property.createdAt | date:'fullDate' }}</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <h4>Last Updated</h4>
+                <p>{{ property.updatedAt | date:'fullDate' }}</p>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons" *ngIf="canEditProperty">
+      <ion-button expand="block" color="primary" [routerLink]="['/tabs/property-form', property.id]">
+        <ion-icon name="create-outline" slot="start"></ion-icon>
+        Edit Property
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="secondary">
+        <ion-icon name="settings-outline" slot="start"></ion-icon>
+        Manage Service Items
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="tertiary">
+        <ion-icon name="people-outline" slot="start"></ion-icon>
+        Assign Team Members
+      </ion-button>
+      
+      <!-- Danger Zone -->
+      <div class="danger-zone" *ngIf="canDeleteProperty">
+        <h4>Danger Zone</h4>
+        <ion-button expand="block" fill="outline" color="warning" (click)="archiveProperty()">
+          <ion-icon name="archive-outline" slot="start"></ion-icon>
+          Archive Property
+        </ion-button>
+        <ion-button expand="block" fill="outline" color="danger" (click)="deleteProperty()">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Delete Property
+        </ion-button>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
