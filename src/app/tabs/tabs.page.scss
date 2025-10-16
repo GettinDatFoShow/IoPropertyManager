@@ -1,20 +1,22 @@
 /* Main content wrapper for split-pane */
 .ion-page {
-	height: 100%;
+	position: relative;
 	display: flex;
 	flex-direction: column;
 }
 
 /* ion-tabs fills the main content area */
 ion-tabs {
-	height: 100%;
+	position: relative;
 	display: flex;
 	flex-direction: column;
+	flex: 1;
 }
 
 ion-router-outlet {
-	flex: 1 1 auto;
-	display: block;
+	position: relative;
+	flex: 1;
+	contain: layout style;
 }
 
 /* When split-pane is active (desktop), hide the bottom tab bar */
