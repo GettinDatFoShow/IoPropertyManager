@@ -1,33 +1,79 @@
-<ion-tabs>
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="dashboard" href="/tabs/dashboard">
-      <ion-icon aria-hidden="true" name="home"></ion-icon>
-      <ion-label>Dashboard</ion-label>
-    </ion-tab-button>
+<!-- Show a side menu on wider screens and the tab-bar at the bottom on smaller screens -->
+<ion-split-pane when="(min-width: 768px)" content-id="main-content">
+  <ion-menu side="start" content-id="main-content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Navigation</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item routerLink="/tabs/dashboard">
+            <ion-icon slot="start" name="home"></ion-icon>
+            <ion-label>Dashboard</ion-label>
+          </ion-item>
+          <ion-item routerLink="/tabs/properties">
+            <ion-icon slot="start" name="business"></ion-icon>
+            <ion-label>Properties</ion-label>
+          </ion-item>
+          <ion-item routerLink="/tabs/services">
+            <ion-icon slot="start" name="construct"></ion-icon>
+            <ion-label>Services</ion-label>
+          </ion-item>
+          <ion-item routerLink="/tabs/schedule">
+            <ion-icon slot="start" name="calendar"></ion-icon>
+            <ion-label>Schedule</ion-label>
+          </ion-item>
+          <ion-item routerLink="/tabs/work-orders">
+            <ion-icon slot="start" name="hammer"></ion-icon>
+            <ion-label>Work Orders</ion-label>
+          </ion-item>
+          <ion-item routerLink="/tabs/reports">
+            <ion-icon slot="start" name="analytics"></ion-icon>
+            <ion-label>Reports</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
 
-    <ion-tab-button tab="properties" href="/tabs/properties">
-      <ion-icon aria-hidden="true" name="business"></ion-icon>
-      <ion-label>Properties</ion-label>
-    </ion-tab-button>
+  <!-- Main content wrapper for split-pane -->
+  <div class="ion-page" id="main-content" main>
+    <ion-tabs>
+      <ion-router-outlet></ion-router-outlet>
 
-    <ion-tab-button tab="services" href="/tabs/services">
-      <ion-icon aria-hidden="true" name="construct"></ion-icon>
-      <ion-label>Services</ion-label>
-    </ion-tab-button>
+      <ion-tab-bar slot="bottom">
+  <ion-tab-button tab="dashboard" routerLink="/tabs/dashboard">
+          <ion-icon aria-hidden="true" name="home"></ion-icon>
+          <ion-label>Dashboard</ion-label>
+        </ion-tab-button>
 
-    <ion-tab-button tab="schedule" href="/tabs/schedule">
-      <ion-icon aria-hidden="true" name="calendar"></ion-icon>
-      <ion-label>Schedule</ion-label>
-    </ion-tab-button>
+  <ion-tab-button tab="properties" routerLink="/tabs/properties">
+          <ion-icon aria-hidden="true" name="business"></ion-icon>
+          <ion-label>Properties</ion-label>
+        </ion-tab-button>
 
-    <ion-tab-button tab="work-orders" href="/tabs/work-orders">
-      <ion-icon aria-hidden="true" name="hammer"></ion-icon>
-      <ion-label>Work Orders</ion-label>
-    </ion-tab-button>
+  <ion-tab-button tab="services" routerLink="/tabs/services">
+          <ion-icon aria-hidden="true" name="construct"></ion-icon>
+          <ion-label>Services</ion-label>
+        </ion-tab-button>
 
-    <ion-tab-button tab="reports" href="/tabs/reports">
-      <ion-icon aria-hidden="true" name="analytics"></ion-icon>
-      <ion-label>Reports</ion-label>
-    </ion-tab-button>
-  </ion-tab-bar>
-</ion-tabs>
+  <ion-tab-button tab="schedule" routerLink="/tabs/schedule">
+          <ion-icon aria-hidden="true" name="calendar"></ion-icon>
+          <ion-label>Schedule</ion-label>
+        </ion-tab-button>
+
+  <ion-tab-button tab="work-orders" routerLink="/tabs/work-orders">
+          <ion-icon aria-hidden="true" name="hammer"></ion-icon>
+          <ion-label>Work Orders</ion-label>
+        </ion-tab-button>
+
+  <ion-tab-button tab="reports" routerLink="/tabs/reports">
+          <ion-icon aria-hidden="true" name="analytics"></ion-icon>
+          <ion-label>Reports</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </div>
+</ion-split-pane>

@@ -64,7 +64,7 @@ import { Router } from '@angular/router';
       </ion-toolbar>
     </ion-header>
 
-    <ion-content [fullscreen]="true" class="ion-padding">
+    <ion-content [fullscreen]="true" class="dashboard-content">
       <!-- Development Mode Toggle -->
       <app-dev-mode-toggle></app-dev-mode-toggle>
       
@@ -218,10 +218,23 @@ import { Router } from '@angular/router';
     </ion-content>
   `,
   styles: [`
+    .dashboard-content {
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --padding-top: 16px;
+      --padding-bottom: 16px;
+    }
+
     .dashboard-container {
-      max-width: 900px;
-      margin: 0 auto;
+      width: 100%;
+      margin: 0;
       padding-top: 1rem;
+    }
+
+    ion-card {
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
     }
 
     .stats-grid {

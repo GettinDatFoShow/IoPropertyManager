@@ -35,3 +35,10 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* Hide ionic bottom tab bar on wider screens to prefer side menu */
+@media (min-width: 768px) {
+	ion-tab-bar[slot="bottom"] {
+		display: none !important;
+	}
+}
