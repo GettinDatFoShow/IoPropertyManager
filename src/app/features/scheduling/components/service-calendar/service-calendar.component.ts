@@ -129,6 +129,51 @@ export class ServiceCalendarComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Handle pull-to-refresh
+   */
+  handleRefresh(event: any) {
+    this.loading = true;
+    this.error = null;
+
+    const criteria: ServiceScheduleSearchCriteria = {
+      searchTerm: this.searchTerm || undefined,
+      category: this.selectedCategory !== 'all' ? this.selectedCategory : undefined,
+      priority: this.selectedPriority !== 'all' ? this.selectedPriority : undefined,
+      isActive: true
+    };
+
+    // Load schedules
+    this.schedulingService.getServiceSchedules(criteria)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.schedules = response.schedules;
+          this.loading = false;
+          this.loadCalendarEvents();
+          event.target.complete(); // Complete the refresh
+        },
+        error: (error) => {
+          console.error('Error loading schedules:', error);
+          this.error = 'Failed to load service schedules. Please try again.';
+          this.loading = false;
+          event.target.complete(); // Complete the refresh even on error
+        }
+      });
+
+    // Load statistics
+    this.schedulingService.getScheduleStatistics()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (stats) => {
+          this.statistics = stats;
+        },
+        error: (error) => {
+          console.error('Error loading statistics:', error);
+        }
+      });
+  }
+
+  /**
    * Load calendar events for current view
    */
   loadCalendarEvents() {

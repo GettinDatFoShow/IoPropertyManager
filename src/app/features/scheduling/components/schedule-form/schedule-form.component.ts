@@ -132,10 +132,10 @@ import { SchedulingService } from '../../services/scheduling.service';
                 </ion-card-title>
               </ion-card-header>
               
-              <ion-card-content>
+              <ion-card-content formGroupName="recurrence">
                 <ion-item>
                   <ion-label position="stacked">Recurrence Type *</ion-label>
-                  <ion-select formControlName="recurrence.type" placeholder="Select recurrence">
+                  <ion-select formControlName="type" placeholder="Select recurrence">
                     <ion-select-option *ngFor="let type of recurrenceTypes" [value]="type.value">
                       {{ type.label }}
                     </ion-select-option>
@@ -162,31 +162,31 @@ import { SchedulingService } from '../../services/scheduling.service';
                     <ion-label position="stacked">Interval</ion-label>
                     <ion-input 
                       type="number" 
-                      formControlName="recurrence.interval" 
+                      formControlName="interval" 
                       min="1">
                     </ion-input>
                   </ion-item>
 
                   <ion-item>
                     <ion-label>Skip Weekends</ion-label>
-                    <ion-toggle formControlName="recurrence.skipWeekends"></ion-toggle>
+                    <ion-toggle formControlName="skipWeekends"></ion-toggle>
                   </ion-item>
 
                   <ion-item>
                     <ion-label>Skip Holidays</ion-label>
-                    <ion-toggle formControlName="recurrence.skipHolidays"></ion-toggle>
+                    <ion-toggle formControlName="skipHolidays"></ion-toggle>
                   </ion-item>
 
                   <ion-item>
                     <ion-label position="stacked">End Date (Optional)</ion-label>
-                    <ion-datetime formControlName="recurrence.endDate"></ion-datetime>
+                    <ion-datetime formControlName="endDate"></ion-datetime>
                   </ion-item>
 
                   <ion-item>
                     <ion-label position="stacked">Max Occurrences (Optional)</ion-label>
                     <ion-input 
                       type="number" 
-                      formControlName="recurrence.maxOccurrences" 
+                      formControlName="maxOccurrences" 
                       min="1">
                     </ion-input>
                   </ion-item>

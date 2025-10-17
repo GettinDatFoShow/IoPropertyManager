@@ -4,18 +4,21 @@
   right: 10px;
   z-index: 9999;
   max-width: 300px;
+  pointer-events: none;
   
   @media (max-width: 768px) {
     position: relative;
     top: 0;
     right: 0;
     max-width: 100%;
+    pointer-events: auto;
   }
 }
 
 .dev-mode-card {
   cursor: pointer;
   transition: all 0.3s ease;
+  pointer-events: auto;
   
   // Collapsed state - only show header
   .expanded-content {

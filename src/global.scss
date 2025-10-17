@@ -47,13 +47,95 @@
 	}
 }
 
-/* Ensure all routed components behave as ion-page elements */
-ion-router-outlet > * {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	display: flex;
-	flex-direction: column;
+/* Ensure app container is properly sized */
+html,
+body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+}
+
+ion-app {
+	width: 100%;
+	height: 100%;
+}
+
+/* Fix for mobile devices - ensure proper viewport sizing */
+@supports (-webkit-touch-callout: none) {
+	/* iOS specific */
+	html,
+	body {
+		height: -webkit-fill-available;
+	}
+}
+
+/* Safe area padding for devices with notches */
+ion-header {
+	padding-top: env(safe-area-inset-top);
+}
+
+ion-tab-bar {
+	padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Fix for aria-hidden focus warning during page transitions */
+.ion-page-hidden {
+	pointer-events: none !important;
+}
+
+.ion-page-hidden * {
+	pointer-events: none !important;
+}
+
+/* Ensure components are clickable and scrollable */
+ion-content {
+	pointer-events: auto;
+}
+
+ion-router-outlet {
+	pointer-events: auto;
+}
+
+/* Allow horizontal scrolling when needed */
+.dashboard-container,
+.property-list-container,
+.stats-grid {
+	overflow-x: auto;
+	overflow-y: visible;
+}
+
+/* Ensure cards and interactive elements are clickable */
+ion-card,
+ion-button,
+ion-item {
+	pointer-events: auto;
+}
+
+/* Mobile viewport fixes */
+@media (max-width: 767px) {
+	/* Ensure split-pane doesn't interfere on mobile */
+	ion-split-pane {
+		--side-max-width: 0px;
+	}
+	
+	/* Make sure the main content is visible */
+	.ion-page {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	
+	/* Ensure tabs container works properly */
+	ion-tabs {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+	
+	/* Router outlet should fill space above tab bar */
+	ion-router-outlet {
+		flex: 1;
+		contain: layout size style;
+	}
 }

@@ -1,22 +1,21 @@
-/* Main content wrapper for split-pane */
+/* Split-pane structure */
+ion-split-pane {
+	--side-width: 250px;
+}
+
+/* Main content area */
 .ion-page {
 	position: relative;
-	display: flex;
-	flex-direction: column;
 }
 
-/* ion-tabs fills the main content area */
 ion-tabs {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	flex: 1;
+	height: 100%;
 }
 
+/* Ensure content is not blocked */
 ion-router-outlet {
 	position: relative;
-	flex: 1;
-	contain: layout style;
+	z-index: 1;
 }
 
 /* When split-pane is active (desktop), hide the bottom tab bar */
@@ -24,4 +23,10 @@ ion-router-outlet {
 	display: none !important;
 }
 
+/* Mobile-specific: Show bottom tabs */
+@media (max-width: 767px) {
+	ion-tab-bar[slot="bottom"] {
+		display: flex !important;
+	}
+}
 

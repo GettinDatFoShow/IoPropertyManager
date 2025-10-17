@@ -272,7 +272,7 @@
                 {{ event.propertyName }}
               </p>
               <p class="event-time">
-                <ion-icon name="time" class="icon-small"></ion-icon>
+                <ion-icon name="time-outline" class="icon-small"></ion-icon>
                 {{ formatTime(event.start) }} - {{ formatTime(event.end) }}
               </p>
               <div class="event-tags">
@@ -352,7 +352,7 @@
   </div>
 
   <!-- Refresh -->
-  <ion-refresher slot="fixed" (ionRefresh)="loadScheduleData()">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content 
       pulling-icon="chevron-down-circle-outline"
       pulling-text="Pull to refresh"

@@ -131,7 +131,7 @@ import { Priority, ServiceCategory } from '../../../services/models';
               </div>
               
               <div class="detail-row">
-                <ion-icon name="time" color="tertiary"></ion-icon>
+                <ion-icon name="time-outline" color="tertiary"></ion-icon>
                 <span>Duration: {{ formatDuration(schedule.estimatedDuration) }}</span>
               </div>
               
@@ -147,8 +147,8 @@ import { Priority, ServiceCategory } from '../../../services/models';
 
               <div class="status-row">
                 <ion-chip [color]="schedule.isActive ? 'success' : 'medium'">
-                  <ion-icon name="checkmark-circle" *ngIf="schedule.isActive"></ion-icon>
-                  <ion-icon name="pause-circle" *ngIf="!schedule.isActive"></ion-icon>
+                  <ion-icon name="checkmark-circle-outline" *ngIf="schedule.isActive"></ion-icon>
+                  <ion-icon name="pause-circle-outline" *ngIf="!schedule.isActive"></ion-icon>
                   {{ schedule.isActive ? 'Active' : 'Inactive' }}
                 </ion-chip>
                 
