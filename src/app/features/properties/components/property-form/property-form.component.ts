@@ -212,7 +212,8 @@ export class PropertyFormComponent implements OnInit {
     if (files && files.length > 0) {
       for (let file of files) {
         // Simulate upload and generate placeholder URL
-        const placeholderUrl = `https://via.placeholder.com/400x300/${this.getRandomColor()}/FFFFFF?text=${encodeURIComponent(file.name.split('.')[0])}`;
+        const randomId = Math.floor(Math.random() * 1000) + 1;
+        const placeholderUrl = `https://picsum.photos/id/${randomId}/400/300`;
         this.uploadedPhotos.push(placeholderUrl);
       }
     }

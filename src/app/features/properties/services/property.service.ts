@@ -196,10 +196,9 @@ export class PropertyService {
     return new Observable(observer => {
       // Simulate photo upload delay
       setTimeout(() => {
-        const uploadedUrls = files.map(file => {
-          const color = this.getRandomColor();
-          const fileName = file.name.split('.')[0];
-          return `https://via.placeholder.com/400x300/${color}/FFFFFF?text=${encodeURIComponent(fileName)}`;
+        const uploadedUrls = files.map((file, index) => {
+          const randomId = Math.floor(Math.random() * 1000) + 1;
+          return `https://picsum.photos/id/${randomId}/400/300`;
         });
 
         observer.next(uploadedUrls);

@@ -29,7 +29,7 @@
     <!-- Property Hero Image -->
     <div class="property-hero">
       <img 
-        [src]="property.photos?.[0] || 'https://via.placeholder.com/800x400/E0E0E0/999999?text=No+Image'" 
+        [src]="property.photos?.[0] || 'https://picsum.photos/800/400?grayscale'" 
         [alt]="property.name"
         class="hero-image"
       />
@@ -143,7 +143,7 @@
               *ngFor="let employeeId of property.assignedEmployees" 
               class="team-member">
               <ion-avatar class="member-avatar">
-                <img src="https://via.placeholder.com/60x60/4A90E2/FFFFFF?text={{ employeeId.split('-')[1].charAt(0).toUpperCase() }}" />
+                <img src="https://i.pravatar.cc/60" />
               </ion-avatar>
               <div class="member-info">
                 <h4>{{ employeeId.split('-')[1] | titlecase }} Employee</h4>

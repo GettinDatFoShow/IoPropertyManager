@@ -67,7 +67,7 @@ export class MockDataService {
     firstName: 'John',
     lastName: 'Smith',
     displayName: 'John Smith',
-    photoURL: 'https://via.placeholder.com/150/4A90E2/FFFFFF?text=JS',
+    photoURL: 'https://i.pravatar.cc/150?img=12',
     role: 'owner',
     profile: {
       firstName: 'John',
@@ -105,7 +105,7 @@ export class MockDataService {
     firstName: 'Sarah',
     lastName: 'Johnson',
     displayName: 'Sarah Johnson',
-    photoURL: 'https://via.placeholder.com/150/10DC60/FFFFFF?text=SJ',
+    photoURL: 'https://i.pravatar.cc/150?img=47',
     role: 'manager',
     profile: {
       firstName: 'Sarah',
@@ -135,7 +135,7 @@ export class MockDataService {
     firstName: 'Mike',
     lastName: 'Davis',
     displayName: 'Mike Davis',
-    photoURL: 'https://via.placeholder.com/150/F04141/FFFFFF?text=MD',
+    photoURL: 'https://i.pravatar.cc/150?img=33',
     role: 'employee',
     profile: {
       firstName: 'Mike',
@@ -221,7 +221,7 @@ export class MockDataService {
         },
         location: { latitude: 34.0522, longitude: -118.2437 },
         photos: [
-          'https://via.placeholder.com/400x300/3880FF/FFFFFF?text=Sunset+Apartments'
+          'https://picsum.photos/id/1018/400/300'
         ],
         subscription: { cost: 2500, billing: 'monthly', nextBilling: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000) },
         assignedEmployees: ['mock-manager-789', 'mock-employee-321'],
@@ -252,7 +252,7 @@ export class MockDataService {
         },
         location: { latitude: 34.0622, longitude: -118.2537 },
         photos: [
-          'https://via.placeholder.com/400x300/10DC60/FFFFFF?text=Oak+Street+Homes'
+          'https://picsum.photos/id/1015/400/300'
         ],
         subscription: { cost: 1800, billing: 'monthly', nextBilling: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000) },
         assignedEmployees: ['mock-employee-321'],
@@ -283,7 +283,7 @@ export class MockDataService {
         },
         location: { latitude: 34.0422, longitude: -118.2337 },
         photos: [
-          'https://via.placeholder.com/400x300/F04141/FFFFFF?text=Maple+Manor'
+          'https://picsum.photos/id/1024/400/300'
         ],
         subscription: { cost: 800, billing: 'monthly', nextBilling: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) },
         assignedEmployees: ['mock-owner-456'],
