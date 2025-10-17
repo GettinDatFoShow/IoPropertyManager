@@ -1,11 +1,17 @@
 // Service Calendar Component Styles
 
+// Direct child cards of main sections get standard margins
+.calendar-controls > ion-card,
+.calendar-content > ion-card,
+.calendar-content > div > ion-card {
+  margin: 0 16px 16px 16px;
+}
+
 .calendar-controls {
-  padding: 16px;
-  padding-bottom: 8px;
+  padding: 16px 16px 0 16px;
 
   ion-card {
-    margin: 0;
+    margin: 0 0 16px 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
@@ -79,11 +85,38 @@
 
 .calendar-content {
   padding: 0 16px 16px;
+
+  ion-card {
+    margin: 0 0 16px 0;
+  }
 }
 
 // Statistics Section
 .statistics-section {
+  padding: 0;
   margin-bottom: 16px;
+
+  ion-row {
+    margin: 0;
+    padding: 0;
+  }
+
+  ion-col {
+    padding: 0 8px 16px 8px;
+
+    &:first-of-type {
+      padding-left: 0;
+    }
+
+    &:last-of-type {
+      padding-right: 0;
+    }
+
+    // On mobile, all columns should have no side padding
+    @media (max-width: 767px) {
+      padding: 0 0 16px 0;
+    }
+  }
 
   .stat-card {
     margin: 0;
@@ -122,6 +155,10 @@
 
 // Month View Styles
 .month-view {
+  ion-card {
+    margin: 0 0 16px 0;
+  }
+
   .calendar-grid {
     .day-headers {
       display: grid;
@@ -218,8 +255,19 @@
   }
 }
 
+// Week View Styles
+.week-view {
+  ion-card {
+    margin: 0 0 16px 0;
+  }
+}
+
 // Agenda View Styles
 .agenda-view {
+  ion-card {
+    margin: 0 0 16px 0;
+  }
+
   .no-events {
     text-align: center;
     padding: 40px 20px;
@@ -315,7 +363,11 @@
 
 // Selected Date Events
 .selected-date-events {
-  margin-top: 16px;
+  margin-top: 0;
+
+  ion-card {
+    margin: 0 0 16px 0;
+  }
 
   .no-events {
     text-align: center;
@@ -415,8 +467,19 @@
 
 // Responsive Adjustments
 @media (max-width: 767px) {
+  // Direct child cards get smaller margins on mobile
+  .calendar-controls > ion-card,
+  .calendar-content > ion-card,
+  .calendar-content > div > ion-card {
+    margin: 0 12px 12px 12px;
+  }
+
   .calendar-controls {
-    padding: 12px;
+    padding: 12px 12px 0 12px;
+
+    ion-card {
+      margin: 0 0 12px 0;
+    }
 
     .navigation-controls {
       flex-wrap: wrap;
@@ -440,6 +503,19 @@
 
   .calendar-content {
     padding: 0 12px 12px;
+
+    ion-card {
+      margin: 0 0 12px 0;
+    }
+  }
+
+  .month-view,
+  .week-view,
+  .agenda-view,
+  .selected-date-events {
+    ion-card {
+      margin: 0 0 12px 0;
+    }
   }
 
   .month-view .calendar-grid .calendar-days .calendar-day {
