@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
+import { ThemeService } from './core/services/theme.service';
 import {
   home,
   homeOutline,
@@ -55,6 +56,7 @@ import {
   list,
   camera,
   moon,
+  sunny,
   lockClosedOutline,
   logoGoogle,
   saveOutline,
@@ -71,7 +73,11 @@ import {
   imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent {
+  private themeService = inject(ThemeService);
+
   constructor() {
+    // Initialize theme service (constructor handles theme setup)
+    
     // Register all icons used throughout the app globally
     addIcons({
       home,
@@ -128,6 +134,7 @@ export class AppComponent {
       list,
       camera,
       moon,
+      sunny,
       'lock-closed-outline': lockClosedOutline,
       'logo-google': logoGoogle,
       'save-outline': saveOutline,

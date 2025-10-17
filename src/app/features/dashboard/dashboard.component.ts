@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
 import { 
   IonContent, 
   IonHeader, 
@@ -32,13 +33,13 @@ import { MockDataService } from '../../core/services/mock-data.service';
 import { DevModeToggleComponent } from '../../shared/components/dev-mode-toggle/dev-mode-toggle.component';
 import { SchedulingDashboardWidgetComponent } from './components/scheduling-dashboard-widget.component';
 import { QuickScheduleWidgetComponent } from './components/quick-schedule-widget.component';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     IonContent,
     IonHeader,
     IonTitle,
@@ -58,6 +59,9 @@ import { Router } from '@angular/router';
     <ion-header [translucent]="true">
       <ion-toolbar>
         <ion-title>Dashboard</ion-title>
+        <ion-button slot="end" fill="clear" routerLink="/tabs/settings">
+          <ion-icon name="settings-outline"></ion-icon>
+        </ion-button>
         <ion-button slot="end" fill="clear" (click)="logout()">
           <ion-icon name="log-out-outline"></ion-icon>
         </ion-button>
@@ -347,10 +351,13 @@ import { Router } from '@angular/router';
 
     .action-buttons {
       margin: 2rem 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
     }
 
     .action-button {
-      margin-bottom: 1rem;
+      margin-bottom: 0;
     }
 
     .dev-notice {
@@ -378,6 +385,10 @@ import { Router } from '@angular/router';
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
+      }
+
+      .action-buttons {
+        grid-template-columns: 1fr;
       }
     }
   `]

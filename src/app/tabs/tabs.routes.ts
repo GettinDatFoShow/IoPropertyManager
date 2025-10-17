@@ -52,6 +52,11 @@ export const routes: Routes = [
           import('../features/properties/components/property-form/property-form.component').then((m) => m.PropertyFormComponent),
       },
       {
+        path: 'settings',
+        loadComponent: () =>
+          import('../features/settings/settings.component').then((m) => m.SettingsComponent),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

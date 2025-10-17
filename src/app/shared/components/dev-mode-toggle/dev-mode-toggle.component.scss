@@ -13,6 +13,35 @@
   }
 }
 
+.dev-mode-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  // Collapsed state - only show header
+  .expanded-content {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+    padding: 0 !important;
+  }
+  
+  .collapsed-header {
+    padding-bottom: 16px;
+  }
+  
+  // Expanded state on hover
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    
+    .expanded-content {
+      max-height: 500px;
+      opacity: 1;
+      padding: 16px !important;
+    }
+  }
+}
+
 .current-user {
   margin-bottom: 16px;
   

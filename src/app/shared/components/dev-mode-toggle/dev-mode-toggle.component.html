@@ -1,11 +1,11 @@
 <div class="dev-mode-container" *ngIf="isDevelopmentMode">
-  <ion-card color="warning">
-    <ion-card-header>
+  <ion-card color="warning" class="dev-mode-card">
+    <ion-card-header class="collapsed-header">
       <ion-card-subtitle>🔧 Development Mode</ion-card-subtitle>
       <ion-card-title>Mock User Control</ion-card-title>
     </ion-card-header>
     
-    <ion-card-content>
+    <ion-card-content class="expanded-content">
       <div class="current-user">
         <p><strong>Current User:</strong> {{ getCurrentUserName() }}</p>
         <p><strong>Role:</strong> 

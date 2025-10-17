@@ -32,9 +32,13 @@
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* Import dark theme palette - will be applied conditionally via class */
+@import '@ionic/angular/css/palettes/dark.class.css';
+
+/* Fallback: Ensure the selector exists even if import fails */
+.ion-palette-dark {
+  color-scheme: dark;
+}
 
 /* Hide ionic bottom tab bar on wider screens to prefer side menu */
 @media (min-width: 768px) {
