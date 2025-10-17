@@ -1,8 +1,11 @@
 // Work Order List Component Styles
 
 .statistics-section {
-  padding: 0 16px;
-  margin-top: 16px;
+  padding: 16px 16px 0 16px;
+
+  ion-card {
+    margin: 0 0 16px 0;
+  }
 
   .stats-grid {
     display: grid;
@@ -39,6 +42,10 @@
   }
 }
 
+ion-card {
+  margin: 0 16px 16px 16px;
+}
+
 .filters-section {
   display: flex;
   flex-direction: column;
@@ -49,11 +56,14 @@
     align-items: center;
 
     ion-searchbar {
-      flex: 1;
+      flex: 2;
+      min-width: 0;
     }
 
     ion-select {
+      flex: 0 0 auto;
       min-width: 200px;
+      max-width: 250px;
     }
   }
 }
@@ -61,8 +71,11 @@
 .work-orders-list {
   padding: 0 16px 32px 16px;
 
+  ion-card {
+    margin: 0 0 16px 0;
+  }
+
   .work-order-card {
-    margin-bottom: 16px;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 
